@@ -8,8 +8,8 @@ df = pd.read_excel('Dados(1).xlsx')
 #banco de dados
 conexao = mysql.connector.connect(
     host = 'localhost',
-    user = 'root',
-    password = 'teste',
+    user = 'aleatorio',
+    password = 'aleatorio',
     database = 'Dados_excel',
 )
 
