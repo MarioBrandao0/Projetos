@@ -2,70 +2,57 @@ import pandas as pd
 import mysql.connector
 
 #ler aquivo
-df = pd.read_excel('Dados(1).xlsx')
-
+df = pd.read_excel('Dados(2).xlsx')
 
 #banco de dados
 conexao = mysql.connector.connect(
     host = 'localhost',
-    user = 'aleatorio',
-    password = 'aleatorio',
+    user = 'root',
+    password = 'teste',
     database = 'Dados_excel',
 )
 
 
 cursor = conexao.cursor()
 
-cursor.execute('SELECT * FROM dados')
-dados_tabela = cursor.fetchall()
-#Comandos
 
-'''for index_n_usa, row in df.iterrows():
-    # Valores a serem inseridos
-    valores = (row["nome"], row["sexo"], row["idade"], row["email"], row["telefone"], row["cidade"])
-    
-    # Verificar se os dados já existem
-    consulta = 'SELECT COUNT(*) FROM dados WHERE nome = %s AND sexo = %s AND idade = %s AND email = %s AND telefone = %s AND cidade = %s'
-    cursor.execute(consulta, valores)
-    
-    # Recuperar o resultado da contagem
-    resultado = cursor.fetchone()
+#Listas
+lista_excel = []
+lista_Nsql = []
+#-----------------------------
+resposta = ''
+consultar = 'SELECT nome FROM dados;'
+cursor.execute(consultar)
+resposta = cursor.fetchall()
 
-    if resultado[0] > 0:#Caso a lista tenha algum valor
-        print(f'Dados já existentes: {valores}')
-        break  # Pula para a próxima iteração do loop
 
-    # Inserir os dados, caso não existam
-    inserir = 'INSERT INTO dados (nome, sexo, idade, email, telefone, cidade) VALUES (%s, %s, %s, %s, %s, %s)'
-    cursor.execute(inserir, valores)'''
-
+#transformar os dados da tabela em listas
 for index_n_usa, row in df.iterrows():
-    consulta = 'SELECT COUNT * FROM dados WHERE nome = %s, sexo = %s, idade = %s, telefone = %s, email = %s, cidade = %s'
-    valores = (row["nome"], row["sexo"], row["idade"], row["email"], row["telefone"], row["cidade"])
-    cursor.execute(consulta, valores)
-    resultado = cursor.fetchone()
-    if resultado[0] > 0:
-        print('resultados ja existem')
-        break#Caso exista encerra aqui
-    #caso nao exista, continua
-    inserir = 'INSERT INTO dados (nome, sexo, idade, email, telefone, cidade) VALUES(%s, %s, %s, %s, %s, %s)'
-    valores = (row["nome"], row["sexo"], row["idade"], row["email"], row["telefone"], row["cidade"])
-    cursor.execute(inserir, valores)
+    v_consulta = (row["nome"])
+    lista_excel.append(v_consulta)
+
+#filtrar e transformar a tabela do mysql em lista:
+for lista_sql in resposta:
+    for nome in lista_sql:
+        lista_Nsql.append(nome)
+#print(lista_Nsql)
+
+#adcionar valores. caso esxista, adcionar os que não existe
+setada1 = set(lista_Nsql)
+setada2 = set(lista_excel)
+valores_faltando = setada2 - setada1
+#comparando se tem valor faltando
+if valores_faltando:
+    for index_n_usa, row in df.iterrows():
+        inserir = 'INSERT INTO dados (nome, sexo, idade, email, telefone, cidade) VALUES(%s, %s, %s, %s, %s, %s)'
+        valores = (row["nome"], row["sexo"], row["idade"], row["email"], row["telefone"], row["cidade"])
+        cursor.execute(inserir, valores)
+        print(f'Os novos valores: {valores_faltando} Foram adcionados')
+else:
+    print('Os valores do banco e do excel são igauis')
 conexao.commit()
-print(f'{cursor.rowcount}, registros inseridos com sucesso')
 
-'''cursor.execute('SELECT * FROM dados')
-
-dados = cursor.fetchall()
-for linha in dados:
-    print('-'*30)
-    for linha2 in linha:
-        print(linha2)'''
-    
-
-#Finalizar conexão
+#encerrando conexão
 cursor.close()
 conexao.close()
 
-
-#comparar:
