@@ -11,6 +11,3 @@ CREATE TABLE dados(
     telefone VARCHAR(100),
     cidade VARCHAR(100)
 );
-
-SELECT * FROM dados;
-SELECT * FROM dados WHERE sexo = 'F';
