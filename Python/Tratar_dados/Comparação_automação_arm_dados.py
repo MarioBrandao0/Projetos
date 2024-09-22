@@ -42,31 +42,31 @@ def adicionar_valores(cursor, df):
         cursor.execute(inserir, valores)
 
 def main():
-    #arquivo
-    df = abrir_arquivo('Dados(2).xlsx')
-    #conexão
-    conexao = conexao_banco('localhost','Usuario', 'Senha', 'Banco')
-    cursor = conexao.cursor()
+    try:
+        #arquivo
+        df = abrir_arquivo('Dados(2).xlsx')
+        #conexão
+        conexao = conexao_banco('localhost','root', 'teste', 'Dados_excel')
+        cursor = conexao.cursor()
 
-    #lista
-    nomes_excel = extrair_nome_df(df=df,)
-    nomes_tabela =obter_nome_bancos(cursor=cursor)
+        #lista
+        nomes_excel = extrair_nome_df(df=df,)
+        nomes_tabela =obter_nome_bancos(cursor=cursor)
 
-    print("Nomes do Excel:", nomes_excel)
-    print("Nomes da Tabela:", nomes_tabela)
-
-    #verificar valores faltando
-    valores_faltando = comparar_listas(lista_sql=nomes_tabela, lista_excel=nomes_excel)
+        #verificar valores faltando
+        valores_faltando = comparar_listas(lista_sql=nomes_tabela, lista_excel=nomes_excel)
 
 
-    if valores_faltando:
-        adicionar_valores(cursor=cursor, df=df)
-        print(f'Valores faltantes: {valores_faltando} Foram adicionado com sucesso ')
-    else:
-        print('Valores do excel ja inseridos')
-    conexao.commit()
-    cursor.close()
-    conexao.close()
+        if valores_faltando:
+            adicionar_valores(cursor=cursor, df=df)
+            print(f'Valores faltantes: {valores_faltando} Foram adicionado com sucesso ')
+        else:
+            print('Valores do excel ja inseridos')
+        conexao.commit()
+        cursor.close()
+        conexao.close()
+    except:
+        print('Houver algum erro')
 
 if __name__ == '__main__':
     main()
