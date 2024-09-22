@@ -1,58 +1,72 @@
 import pandas as pd
 import mysql.connector
 
-#ler aquivo
-df = pd.read_excel('Caminho do arquivo')
+def abrir_arquivo(caminho):
+    return (pd.read_excel(caminho))
 
-#banco de dados
-conexao = mysql.connector.connect(
-    host = 'Seu host',
-    user = 'Seu User',
-    password = 'Sua senha',
-    database = 'Sua base de dados',
-)
+def conexao_banco(hosti, usuario, senha, banco):
+    return mysql.connector.connect(
+        host=hosti,
+        user=usuario,
+        password=senha,
+        database=banco
+    )
 
+def obter_nome_bancos(cursor):
+    lista_sql1 = []
+    cursor.execute('SELECT nome FROM dados')
+    resposta = cursor.fetchall()
+    for lista in resposta:
+        for nome in lista:
+            lista_sql1.append(nome)
+    return lista_sql1
 
-cursor = conexao.cursor()
-
-
-#Listas
-lista_excel = []
-lista_Nsql = []
-#-----------------------------
-resposta = ''
-consultar = 'SELECT nome FROM tabela;'
-cursor.execute(consultar)
-resposta = cursor.fetchall()
-
-
-#transformar os dados da tabela em listas
-for index_n_usa, row in df.iterrows():
-    v_consulta = (row["nome"])
-    lista_excel.append(v_consulta)
-
-#filtrar e transformar a tabela do mysql em lista:
-for lista_sql in resposta:
-    for nome in lista_sql:
-        lista_Nsql.append(nome)
-#print(lista_Nsql)
-
-#adcionar valores. caso esxista, adcionar os que não existe
-setada1 = set(lista_Nsql)
-setada2 = set(lista_excel)
-valores_faltando = setada2 - setada1
-#comparando se tem valor faltando
-if valores_faltando:
+def extrair_nome_df(df):
+    lista_excel1 = []
     for index_n_usa, row in df.iterrows():
-        inserir = 'INSERT INTO tabela (nome, sexo, idade, email, telefone, cidade) VALUES(%s, %s, %s, %s, %s, %s)'
+        v_consulta = (row["nome"])
+        if v_consulta:
+            lista_excel1.append(v_consulta)
+    return lista_excel1
+
+def comparar_listas(lista_sql, lista_excel):
+    setada1 = set(lista_excel)
+    setada2 = set(lista_sql)
+    comparar = setada1 - setada2
+    return comparar
+
+def adicionar_valores(cursor, df):
+    for index_n_usa, row in df.iterrows():
+        inserir = 'INSERT INTO dados (nome, sexo, idade, email, telefone, cidade) VALUES (%s, %s, %s, %s, %s, %s)'
         valores = (row["nome"], row["sexo"], row["idade"], row["email"], row["telefone"], row["cidade"])
         cursor.execute(inserir, valores)
-        print(f'Os novos valores: {valores_faltando} Foram adcionados')
-else:
-    print('Os valores do banco e do excel são igauis')
-conexao.commit()
 
-#encerrando conexão
-cursor.close()
-conexao.close()
+def main():
+    #arquivo
+    df = abrir_arquivo('Dados(2).xlsx')
+    #conexão
+    conexao = conexao_banco('localhost','Usuario', 'Senha', 'Banco')
+    cursor = conexao.cursor()
 
+    #lista
+    nomes_excel = extrair_nome_df(df=df,)
+    nomes_tabela =obter_nome_bancos(cursor=cursor)
+
+    print("Nomes do Excel:", nomes_excel)
+    print("Nomes da Tabela:", nomes_tabela)
+
+    #verificar valores faltando
+    valores_faltando = comparar_listas(lista_sql=nomes_tabela, lista_excel=nomes_excel)
+
+
+    if valores_faltando:
+        adicionar_valores(cursor=cursor, df=df)
+        print(f'Valores faltantes: {valores_faltando} Foram adicionado com sucesso ')
+    else:
+        print('Valores do excel ja inseridos')
+    conexao.commit()
+    cursor.close()
+    conexao.close()
+
+if __name__ == '__main__':
+    main()
