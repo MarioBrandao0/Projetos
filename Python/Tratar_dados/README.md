@@ -1,4 +1,4 @@
 #Um projeto que ler uma tabela em excel e armazena os valores em um banco de dado(MySQL)
 <p>(Tabela Criada diretamente no MySQL WorkBench)</p>
-<p>Primeiro, o arquivo está pronto. Porém, agora quero fazer uma comparação para que, caso os valores que serão inseridos sejam iguais aos que estão na tabela, não sejam inseridos.</p>
-<p>Terminar o Arquivo 'Comparação_automação_arm_dados'</p>
+<p>Projeto que pega dados de um arquivo em excel e joga para um banco de dados MySQL. Ele analisa para ver se existe o mesmo nome com valores iguais e não adciona</p>
+<p>melhorar para que ele verifique todos os dados da tabela para não repetir e organizar melhor o codigo</p>
