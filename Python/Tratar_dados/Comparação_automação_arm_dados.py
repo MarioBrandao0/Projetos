@@ -71,4 +71,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-#Isso foi um teste para o Github direto do vsCode
