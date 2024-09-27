@@ -43,8 +43,11 @@ def adicionar_valores(cursor, df):
 
 def main():
     try:
+        #variaveis importantes
+        arquivo = str(input('Caminho do arquivo: ')).strip()
+        
         #arquivo
-        df = abrir_arquivo('Dados(2).xlsx')
+        df = abrir_arquivo(arquivo)
         #conexão
         conexao = conexao_banco('localhost','root', 'teste', 'Dados_excel')
         cursor = conexao.cursor()
