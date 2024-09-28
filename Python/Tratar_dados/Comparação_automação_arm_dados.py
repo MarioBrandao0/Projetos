@@ -91,9 +91,12 @@ def main():
             excluir_cliente(cursor=cursor)
         
         conexao.commit()
-        cursor.close()
-        conexao.close()
+    
     except Exception as e:
         print(f'Houve um erro {e}')
+    
+    finally:
+        cursor.close()
+        conexao.close()
 if __name__ == '__main__':
     main()
