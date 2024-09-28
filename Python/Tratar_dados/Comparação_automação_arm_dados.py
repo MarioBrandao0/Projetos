@@ -41,36 +41,59 @@ def adicionar_valores(cursor, df):
         valores = (row["nome"], row["sexo"], row["idade"], row["email"], row["telefone"], row["cidade"])
         cursor.execute(inserir, valores)
 
+def atualizar_valores(cursor):
+    nome = str(input('Nome da pessoa: ')).capitalize()
+    v_trocar = str(input('O que deseja trocar: '))
+    novo_valor = str(input(f'Digite o novo {v_trocar}:'))
+
+    atualizar = f'UPDATE dados SET {v_trocar} = "{novo_valor}" WHERE nome = "{nome}"'
+    cursor.execute(atualizar)
+    print(f'O {v_trocar} de {nome} foi atualizado com sucesso: ')
+
+def excluir_cliente(cursor):
+    print('----Excluir----')
+    nome = str(input('Nome do cliente:'))
+    excluir = f'DELETE FROM dados WHERE nome = "{nome}"'
+    cursor.execute(excluir)
+    print(f'Cliente {nome} excluido com sucesso')
 def main():
     try:
-        #variaveis importantes
-        arquivo = str(input('Caminho do arquivo: ')).strip()
-        
-        #arquivo
-        df = abrir_arquivo(arquivo)
-        #conexão
+        #Conexão com banco
         conexao = conexao_banco('localhost','root', 'teste', 'Dados_excel')
         cursor = conexao.cursor()
+        
+        escolha = str(input('O que você deseja fazer? [Atualizar/Registrar/Excluir]')).upper()
+        if escolha == 'REGISTRAR':
+            arquivo = str(input('Caminho do arquivo: ')).strip()
+            
+            #arquivo
+            df = abrir_arquivo(arquivo)
+            #conexão
 
-        #lista
-        nomes_excel = extrair_nome_df(df=df,)
-        nomes_tabela =obter_nome_bancos(cursor=cursor)
 
-        #verificar valores faltando
-        valores_faltando = comparar_listas(lista_sql=nomes_tabela, lista_excel=nomes_excel)
+            #lista
+            nomes_excel = extrair_nome_df(df=df,)
+            nomes_tabela =obter_nome_bancos(cursor=cursor)
+
+            #verificar valores faltando
+            valores_faltando = comparar_listas(lista_sql=nomes_tabela, lista_excel=nomes_excel)
 
 
-        if valores_faltando:
-            adicionar_valores(cursor=cursor, df=df)
-            print(f'Valores faltantes: {valores_faltando} Foram adicionado com sucesso ')
-        else:
-            print('Valores do excel ja inseridos')
+            if valores_faltando:
+                adicionar_valores(cursor=cursor, df=df)
+                print(f'Valores faltantes: {valores_faltando} Foram adicionado com sucesso ')
+            else:
+                print('Valores do excel ja inseridos')
+        
+        elif escolha == 'ATUALIZAR':
+            atualizar_valores(cursor=cursor)
+        elif escolha == 'EXCLUIR':
+            excluir_cliente(cursor=cursor)
+        
         conexao.commit()
         cursor.close()
         conexao.close()
-    except:
-        print('Houver algum erro')
-
+    except Exception as e:
+        print(f'Houve um erro {e}')
 if __name__ == '__main__':
     main()
-
