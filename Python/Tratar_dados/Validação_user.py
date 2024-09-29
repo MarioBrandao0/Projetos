@@ -36,7 +36,7 @@ def main(l_login):
             escolha = str(input('Registrar/Alterar/Excluir: ')).upper()
             if escolha == 'REGISTAR':
                 registrar_user(cursor=cursor)
-
+            #adicionar mais funcionalidades
         
         l_logins = logins(cursor=cursor, result='')
         return l_logins  
