@@ -42,5 +42,5 @@ Este código é um projeto que permite interagir com um banco de dados MySQL par
 ## Considerações Finais
 Este projeto ainda está em desenvolvimento e será atualizado com melhorias de segurança, validação de entradas e tratamento de erros para tornar o sistema mais robusto e confiável.
 
-# (Projeto pessoal)
+# OBS:Projeto pessoal
 
