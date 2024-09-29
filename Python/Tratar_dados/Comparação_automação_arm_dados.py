@@ -1,5 +1,6 @@
 import pandas as pd
 import mysql.connector
+import Validação_user as vl 
 
 def abrir_arquivo(caminho):
     return (pd.read_excel(caminho))
@@ -56,47 +57,64 @@ def excluir_cliente(cursor):
     excluir = f'DELETE FROM dados WHERE nome = "{nome}"'
     cursor.execute(excluir)
     print(f'Cliente {nome} excluido com sucesso')
+
 def main():
     try:
         #Conexão com banco
         conexao = conexao_banco('localhost','root', 'teste', 'Dados_excel')
         cursor = conexao.cursor()
         
-        escolha = str(input('O que você deseja fazer? [Atualizar/Registrar/Excluir]')).upper()
-        if escolha == 'REGISTRAR':
-            arquivo = str(input('Caminho do arquivo: ')).strip()
+        confere = False
+        login = str(input('Digite o login: '))
+        senha = str(input('Digite a senha: '))
+        l_login = vl.main(l_login= '')
+        for logins in l_login:
+            if logins['Login'] == login and logins['Senha'] == senha:
+                print('Conexão bem sucedida')
+                confere = True
+                break
+
+        if confere:
+            escolha = str(input('O que você deseja fazer? [Atualizar/Registrar/Excluir]')).upper()
+            if escolha == 'REGISTRAR':
+                arquivo = str(input('Caminho do arquivo: ')).strip()
+                
+                #arquivo
+                df = abrir_arquivo(arquivo)
+                #conexão
+
+
+                #lista
+                nomes_excel = extrair_nome_df(df=df,)
+                nomes_tabela =obter_nome_bancos(cursor=cursor)
+
+                #verificar valores faltando
+                valores_faltando = comparar_listas(lista_sql=nomes_tabela, lista_excel=nomes_excel)
+
+
+                if valores_faltando:
+                    adicionar_valores(cursor=cursor, df=df)
+                    print(f'Valores faltantes: {valores_faltando} Foram adicionado com sucesso ')
+                else:
+                    print('Valores do excel ja inseridos')
             
-            #arquivo
-            df = abrir_arquivo(arquivo)
-            #conexão
-
-
-            #lista
-            nomes_excel = extrair_nome_df(df=df,)
-            nomes_tabela =obter_nome_bancos(cursor=cursor)
-
-            #verificar valores faltando
-            valores_faltando = comparar_listas(lista_sql=nomes_tabela, lista_excel=nomes_excel)
-
-
-            if valores_faltando:
-                adicionar_valores(cursor=cursor, df=df)
-                print(f'Valores faltantes: {valores_faltando} Foram adicionado com sucesso ')
-            else:
-                print('Valores do excel ja inseridos')
+            elif escolha == 'ATUALIZAR':
+                atualizar_valores(cursor=cursor)
+            elif escolha == 'EXCLUIR':
+                excluir_cliente(cursor=cursor)
+            
+            conexao.commit()
         
-        elif escolha == 'ATUALIZAR':
-            atualizar_valores(cursor=cursor)
-        elif escolha == 'EXCLUIR':
-            excluir_cliente(cursor=cursor)
-        
-        conexao.commit()
+        else:
+            print(f'O login {login} e senha {senha} não existem')
     
     except Exception as e:
         print(f'Houve um erro {e}')
     
     finally:
-        cursor.close()
-        conexao.close()
+        if cursor:
+            cursor.close()
+        if conexao:
+            conexao.close()
 if __name__ == '__main__':
     main()
