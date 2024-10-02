@@ -37,9 +37,9 @@ def main(l_login):
             if escolha == 'REGISTAR':
                 registrar_user(cursor=cursor)
             #adicionar mais funcionalidades
-        
-        l_logins = logins(cursor=cursor, result='')
-        return l_logins  
+        if __name__ != '__main__':
+            l_logins = logins(cursor=cursor, result='')
+            return l_logins  
 
         conexao.commit()
     

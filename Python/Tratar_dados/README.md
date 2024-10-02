@@ -1,5 +1,5 @@
 # Documentação do Código
-
+(Atualizar documentação)
 ## Descrição
 Este código é um projeto que permite interagir com um banco de dados MySQL para gerenciar informações de usuários. Ele suporta operações de registro, atualização e exclusão de dados, além de realizar validações de login. Os dados podem ser importados de um arquivo Excel.
 

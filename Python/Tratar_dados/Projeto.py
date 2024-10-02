@@ -36,11 +36,15 @@ def comparar_listas(lista_sql, lista_excel):
     comparar = setada1 - setada2
     return comparar
 #///////////////////////////////////////////////////////////////////////////////////////////////////////
-def adicionar_valores(cursor, df):
+def adicionar_valores(cursor, df, vl_faltando):
+    lista_nomes = []
+    for nome in vl_faltando:
+        lista_nomes.append(nome)
     for index_n_usa, row in df.iterrows():
-        inserir = 'INSERT INTO dados (nome, sexo, idade, email, telefone, cidade) VALUES (%s, %s, %s, %s, %s, %s)'
-        valores = (row["nome"], row["sexo"], row["idade"], row["email"], row["telefone"], row["cidade"])
-        cursor.execute(inserir, valores)
+        if row["nome"] in lista_nomes:
+            inserir = 'INSERT INTO dados (nome, sexo, idade, email, telefone, cidade) VALUES (%s, %s, %s, %s, %s, %s)'
+            valores = (row["nome"], row["sexo"], row["idade"], row["email"], row["telefone"], row["cidade"])
+            cursor.execute(inserir, valores)
 #///////////////////////////////////////////////////////////////////////////////////////////////////////
 def atualizar_valores(cursor):
     nome = str(input('Nome da pessoa: ')).capitalize()
@@ -96,49 +100,52 @@ def main():
         for logins in l_login:
             if logins['Login'] == login and logins['Senha'] == senha:
                 print('Conexão bem sucedida')
+                print('-'*80)
                 confere = True
                 break
 
         if confere:
-            escolha = str(input('O que você deseja fazer? [Atualizar/Registrar/Excluir/Dados]')).upper()
-            if escolha == 'REGISTRAR':
-                arquivo = str(input('Caminho do arquivo: ')).strip()
+            while True:
+                escolha = str(input('O que você deseja fazer? [Atualizar/Registrar/Excluir/Dados/Sair]')).upper()
+                if escolha == 'REGISTRAR':
+                    arquivo = str(input('Caminho do arquivo: ')).strip()
+                    
+                    #arquivo
+                    df = abrir_arquivo(arquivo)
+                    #conexão
+
+
+                    #lista
+                    nomes_excel = extrair_nome_df(df=df,)
+                    nomes_tabela =obter_nome_bancos(cursor=cursor)
+
+                    #verificar valores faltando
+                    valores_faltando = comparar_listas(lista_sql=nomes_tabela, lista_excel=nomes_excel)
+
+
+                    if valores_faltando:
+                        adicionar_valores(cursor=cursor, df=df, vl_faltando=valores_faltando)
+                        #concertar isso aqui
+                        print(f'Valores faltantes: {valores_faltando} Foram adicionado com sucesso ')
+                    else:
+                        print('Valores do excel ja inseridos')
                 
-                #arquivo
-                df = abrir_arquivo(arquivo)
-                #conexão
+                elif escolha == 'ATUALIZAR':
+                    atualizar_valores(cursor=cursor)
 
+                elif escolha == 'EXCLUIR':
+                    excluir_cliente(cursor=cursor)
 
-                #lista
-                nomes_excel = extrair_nome_df(df=df,)
-                nomes_tabela =obter_nome_bancos(cursor=cursor)
-
-                #verificar valores faltando
-                valores_faltando = comparar_listas(lista_sql=nomes_tabela, lista_excel=nomes_excel)
-
-
-                if valores_faltando:
-                    adicionar_valores(cursor=cursor, df=df)
-                    #concertar isso aqui
-                    print(f'Valores faltantes: {valores_faltando} Foram adicionado com sucesso ')
-                else:
-                    print('Valores do excel ja inseridos')
-            
-            elif escolha == 'ATUALIZAR':
-                atualizar_valores(cursor=cursor)
-
-            elif escolha == 'EXCLUIR':
-                excluir_cliente(cursor=cursor)
-
-            elif escolha == 'DADOS':
-                filt = int(input('1.Dados completo\n 2.Filtrar: '))
-                if filt == 1:
-                    pesquisar(cursor=cursor)
-                elif filt == 2:
-                    filtrar(cursor=cursor)
-            
-            conexao.commit()
-        
+                elif escolha == 'DADOS':
+                    filt = int(input('1.Dados completo\n 2.Filtrar: '))
+                    if filt == 1:
+                        pesquisar(cursor=cursor)
+                    elif filt == 2:
+                        filtrar(cursor=cursor)
+                elif escolha == 'SAIR':
+                    break
+                conexao.commit()
+                print('-'*80)
         else:
             print(f'O login {login} e senha {senha} não existem')
     
