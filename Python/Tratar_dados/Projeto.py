@@ -143,7 +143,7 @@ def main():
                     elif filt == 2:
                         filtrar(cursor=cursor)
                 elif escolha == 'SAIR':
-                    break
+                    breaks
                 conexao.commit()
                 print('-'*80)
         else:
