@@ -1,6 +1,7 @@
 import pandas as pd
 import mysql.connector
-import Validação_user as vl 
+import Validação_user as vl
+import SistemaBakup as sb 
 #///////////////////////////////////////////////////////////////////////////////////////////////////////
 def abrir_arquivo(caminho):
     return (pd.read_excel(caminho))
@@ -57,10 +58,16 @@ def atualizar_valores(cursor):
 #///////////////////////////////////////////////////////////////////////////////////////////////////////
 def excluir_cliente(cursor):
     print('----Excluir----')
-    nome = str(input('Nome do cliente:'))
+    nome = str(input('Nome do cliente:')).capitalize()
     excluir = f'DELETE FROM dados WHERE nome = "{nome}"'
+    cursor.execute(f'SELECT * FROM dados WHERE nome = "{nome}"')
+    valoreBackup = cursor.fetchall()
+    sb.main(nomesBp=valoreBackup)
+    if valoreBackup:
+        print(f'Cliente {nome} excluido com sucesso')
+    else:
+        print('Cliente não cadastrado ou ja excluido')
     cursor.execute(excluir)
-    print(f'Cliente {nome} excluido com sucesso')
 #///////////////////////////////////////////////////////////////////////////////////////////////////////
 def filtrar(cursor):
     print('Filtros: ID/NOME/SEXO/IDADE/CIDADE')
