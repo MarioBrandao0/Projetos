@@ -1,3 +1,4 @@
 # Projetos
 Projetos que crio para praticar
-<p>Terminar o Arquivo 'Comparação_automação_arm_dados'</p>
+- Refatorar o codigo em Tratar_dados
+- Terminar o sistema de backup
