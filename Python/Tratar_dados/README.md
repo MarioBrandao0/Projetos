@@ -76,10 +76,6 @@ Por favor, abra issues ou pull requests.
 
 ---
 
-## Licença
-
-Licenciado sob a licença MIT.
-
 ---
 
 ## Autor
